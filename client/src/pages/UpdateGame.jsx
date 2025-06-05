@@ -1,19 +1,40 @@
-import { useParams } from 'react-router-dom'
+import { useNavigate, useParams } from 'react-router-dom'
 import { useForm } from 'react-hook-form';
-import { useQuery } from '@tanstack/react-query';
+import { useQuery,useMutation, useQueryClient } from '@tanstack/react-query';
 import { useEffect } from 'react'
 
 function UpdateGame(){
     const {id} = useParams()
-
+    const navigate = useNavigate();
+    const queryClient = useQueryClient();
     const {register,handleSubmit,formState:{ errors },reset,} = useForm();
 
     async function fetchGame(){
-    const response = await fetch(`http://localhost:3000/api/games/${id}`)
-    return response.json()
-}
+        const response = await fetch(`http://localhost:3000/api/games/${id}`)
+        return response.json()
+    }
 
-    const { data,error,isLoading,isError } = useQuery({queryKey: ["game",id],queryFn:fetchGame});
+    async function editGame(updatedGame){
+        const response = await fetch(`http://localhost:3000/api/games/${id}`,{
+        method:"PUT",
+        headers:{"Content-Type":"application/json"},
+        body: JSON.stringify(updatedGame)
+    });
+    return response.json(); 
+    }
+
+    const { data,error,isLoading,isError } = useQuery({
+        queryKey: ["game",id],
+        queryFn:fetchGame
+    });
+
+    const { mutate } = useMutation({
+        mutationFn:editGame, 
+        onSuccess: () => {
+            queryClient.invalidateQueries(["games"]);
+            queryClient.invalidateQueries(["game",id]);
+            navigate("/");
+        }})
 
     useEffect(()=>{
         if(data){
@@ -21,7 +42,13 @@ function UpdateGame(){
         }
     },[data,reset])
 
-    const onSubmit = () => {}
+    const onSubmit = (formData) => {
+        mutate({
+            name:formData.name,
+            platform:formData.platform,
+            genre:formData.genre,
+        })
+    }
 
     if(isLoading) return <p className="page-container"> Loading game...</p>
     if(isError) return <p className="page-container"> Error:{error.message}</p>
