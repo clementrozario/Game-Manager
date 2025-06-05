@@ -1,6 +1,7 @@
 import express from 'express';
 import cors from 'cors';
 import { games } from './Fake.js' 
+import { error } from 'console';
 
 const app = express();
 const PORT = 3000;
@@ -10,6 +11,17 @@ app.use(cors());
 
 app.get("/api/games",(req,res)=>{
     res.json(games);
+})
+
+app.get("/api/games/:id",(req,res)=>{
+    const {id} =req.params
+    const game = games.find((g)=> g.id === Number(id));
+
+    if(!game){
+        return res.status(404).json({error:"Game not Found."})
+    }
+
+    res.json(game)
 })
 
 app.post("/api/games",(req,res)=>{
