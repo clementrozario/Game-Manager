@@ -1,5 +1,6 @@
 import { useForm } from 'react-hook-form'
-import { useMutation } from "@tanstack/react-query"
+import { useMutation,useQueryClient } from "@tanstack/react-query"
+import { useNavigate } from 'react-router-dom'
 
 async function createGame(newGame){
     const response = await fetch("http://localhost:3000/api/games",{
@@ -14,14 +15,23 @@ function CreateGame(){
 
     const {register,handleSubmit,formState:{ errors },} = useForm()
 
-    const { mutate } = useMutation({mutationFn:createGame})
+    const navigate = useNavigate()
+    const QueryClient = useQueryClient();
+
+    const { mutate } = useMutation({
+        mutationFn:createGame,
+        onSuccess:()=>{
+            QueryClient.invalidateQueries(["games"]);
+            navigate("/")
+        },
+    })
 
     const onSubmit = (formData) => {
         console.log(formData)
         mutate({
             name:formData.name,
             platform:formData.platform,
-            genre:formData.genre
+            genre:formData.genre,
         });
     };
 

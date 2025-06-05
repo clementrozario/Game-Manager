@@ -12,7 +12,7 @@ app.get("/api/games",(req,res)=>{
     res.json(games);
 })
 
-app.put("/api/games",(req,res)=>{
+app.post("/api/games",(req,res)=>{
     const newGame = req.body;
     games.push({...newGame,id:games.length+1});
     res.status(201).json(newGame);
