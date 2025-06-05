@@ -1,7 +1,6 @@
 import express from 'express';
 import cors from 'cors';
 import { games } from './Fake.js' 
-import { error } from 'console';
 
 const app = express();
 const PORT = 3000;
