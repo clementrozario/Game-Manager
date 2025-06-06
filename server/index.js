@@ -54,7 +54,7 @@ app.delete("/api/games/:id",(req,res)=>{
         return res.status(404).json({error:"Game not found."});
     }
     const deletedGame = games.splice(index,1)[0];
-    res.json(deletedGame)
+    res.json(deletedGame)   
 })
 
 app.listen(PORT,()=>{
