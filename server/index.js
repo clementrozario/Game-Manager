@@ -46,6 +46,17 @@ app.put("/api/games/:id",(req,res)=>{
     res.json(games[index])
 })
 
+app.delete("/api/games/:id",(req,res)=>{
+    const {id} =req.params;
+    
+    const index = games.findIndex((g)=>g.id===Number(id));
+    if(index===-1){
+        return res.status(404).json({error:"Game not found."});
+    }
+    const deletedGame = games.splice(index,1)[0];
+    res.json(deletedGame)
+})
+
 app.listen(PORT,()=>{
     console.log(`server is listening to port:${PORT}`);
 })
